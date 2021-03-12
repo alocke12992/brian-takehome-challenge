@@ -1,7 +1,14 @@
 .table-component {
-  text-align: left;
-
-  th, td {
+  th,
+  td {
     padding: 4px 4px;
+  }
+
+  .pagination-controls {
+    margin-top: 16px;
+
+    button.active {
+      background-color: rgb(208, 208, 233);
+    }
   }
 }

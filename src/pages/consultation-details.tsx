@@ -1,10 +1,6 @@
 import './consultation-details.scss';
-import moment from 'moment-timezone';
 import { IConsultation } from '../types/consultations';
-
-const getISOShort = (date: number | string | Date) => {
-  return moment(date).format('YYYY-MM-DD');
-};
+import { getISOShort } from '../utils/datetime';
 
 export const ConsultationDetailsPage = (props: {
   consultation: IConsultation;

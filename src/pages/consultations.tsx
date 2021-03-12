@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Table } from '../components/Table';
 import { IConsultation } from '../types/consultations';
 import { ConsultationDetailsPage } from './consultation-details';
+import { getISOShort } from '../utils/datetime';
 
 const CONSULTATIONS_ENDPOINT =
   'https://2revjapjwd.execute-api.us-west-1.amazonaws.com/dev/consultations';
@@ -24,16 +25,22 @@ export const ConsultationsPage = () => {
   const [consultations, setConsultations] = useState<IConsultation[]>([]);
 
   useEffect(() => {
+    const initialTitle = document.title;
+    document.title = 'Apostrophe - Consultations'; // For fun
+
     const initState = async () => {
       const consultationsRes = await (
         await fetch(CONSULTATIONS_ENDPOINT)
       ).json();
-      console.log(consultationsRes);
 
       setConsultations(consultationsRes.response.elements);
     };
 
     initState();
+
+    return () => {
+      document.title = initialTitle;
+    };
   }, []);
 
   const filteredConsultations = consultations.filter((consultation) => {
@@ -59,21 +66,23 @@ export const ConsultationsPage = () => {
 
   const renderTableView = () => {
     const headers = headerKeys.map((header) => <th key={header}>{header}</th>);
-    const rows = filteredConsultations.map((con) => (
-      <tr key={con.id}>
-        {headerKeys.map((header) => (
-          <td key={header}>
-            {header === 'id' ? (
-              <button onClick={() => setSelectedConsultation(con)}>
-                {con[header]}
-              </button>
-            ) : (
-              con[header]
-            )}
+    const rows = filteredConsultations.map((consultation) => {
+      const { id, state, patient_id, doctor_id, completedDate } = consultation;
+
+      return (
+        <tr key={id}>
+          <td>
+            <button onClick={() => setSelectedConsultation(consultation)}>
+              {id}
+            </button>
           </td>
-        ))}
-      </tr>
-    ));
+          <td>{state}</td>
+          <td>{patient_id}</td>
+          <td>{doctor_id}</td>
+          <td>{getISOShort(completedDate)}</td>
+        </tr>
+      );
+    });
 
     return (
       <div className='table-view'>
@@ -87,7 +96,7 @@ export const ConsultationsPage = () => {
         {filterTerm && (
           <button onClick={() => setFilterTerm('')}>&times;</button>
         )}
-        <Table headers={headers} rows={rows} />
+        <Table headers={headers} rows={rows} rowsPerPage={10} />
       </div>
     );
   };
