@@ -1,0 +1,8 @@
+.consultation-details-page {
+  .consultation-details-table {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    grid-column-gap: 16px;
+    width: max-content;
+  }
+}
